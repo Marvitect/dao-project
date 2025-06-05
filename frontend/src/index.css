@@ -1,0 +1,214 @@
+/* Bootstrap CSS import */
+@import "bootstrap/dist/css/bootstrap.min.css";
+
+/* Tailwind CSS */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* index.css */
+
+/* Root variables and base styles — LIGHT MODE ONLY */
+:root {
+  --border-radius: 12px;
+
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color: #213547;
+  background-color: #ffffff;
+
+  --button-bg: #0070f3;
+  --button-bg-hover: #dde1ff;
+  --primary-color: #646cff;
+  --navbar-bg: #e0e7ff;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Smooth color transitions for all elements */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease;
+  box-sizing: border-box;
+}
+
+/* Base container and card styles */
+container,
+.card,
+section,
+article {
+  border-radius: var(--border-radius);
+  background-color: #f5f7ff;
+  padding: 1rem;
+  box-shadow: 0 4px 10px rgba(100, 100, 255, 0.1);
+  color: #213547;
+  width: 90%;              /* fluid width */
+  max-width: 700px;        /* limit max width */
+  margin: 2rem auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Navbar styles */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  margin-bottom: 2rem;
+  background-color: var(--navbar-bg);
+  border-radius: var(--border-radius);
+  box-shadow: 0 2px 8px rgba(100, 100, 255, 0.15);
+  color: #213547;
+}
+
+/* Button styles */
+button {
+  border-radius: var(--border-radius);
+  border: none;
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: inherit;
+  background-color: var(--button-bg);
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 112, 243, 0.4);
+  user-select: none;
+}
+
+button:hover {
+  background-color: var(--button-bg-hover);
+  border-color: var(--primary-color);
+  box-shadow: 0 4px 14px rgba(100, 108, 255, 0.7);
+}
+
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+  box-shadow: 0 0 0 3px var(--primary-color);
+}
+
+/* Responsive helper: button groups centered and spaced */
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Form styles */
+.form {
+  margin-top: 1rem;
+}
+
+.form-control {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-control label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #213547;
+}
+
+.form-control input,
+.form-select {
+  padding: 0.5rem;
+  border-radius: var(--border-radius);
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.3s ease;
+}
+
+.form-control input:focus,
+.form-select:focus {
+  border-color: var(--primary-color);
+  outline: none;
+  box-shadow: 0 0 5px var(--primary-color);
+}
+
+.input-option {
+  margin-bottom: 0.5rem;
+  width: 100%;
+}
+
+/* Add Option button */
+.btn-add-option {
+  background-color: var(--button-bg);
+  color: white;
+  border-radius: var(--border-radius);
+  padding: 0.4rem 1rem;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+  width: max-content;
+}
+
+.btn-add-option:hover {
+  background-color: var(--button-bg-hover);
+  color: var(--primary-color);
+}
+
+/* List styles */
+.list {
+  list-style-type: none;
+  padding-left: 0;
+  color: #213547;
+}
+
+.list-item {
+  margin-bottom: 0.25rem;
+}
+
+/* Card header */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Delete button */
+.btn-delete {
+  background: transparent;
+  border: none;
+  color: #ff4d4d;
+  font-size: 1.2rem;
+  cursor: pointer;
+  user-select: none;
+  padding: 0;
+  transition: color 0.3s ease;
+}
+
+.btn-delete:hover {
+  color: #ff0000;
+}
+.app-container {
+  max-width: 1000px;      /* max width, can adjust */
+  margin-left: auto;      /* center horizontally */
+  margin-right: auto;
+  padding-left: 16px;     /* responsive padding */
+  padding-right: 16px;
+  min-width: 320px;       /* keep it readable on small screens */
+  font-size: 16px;        /* base font size */
+}
+/* Proposal table wrapper - scroll horizontally if needed */
+.proposals-table-wrapper {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: auto;
+  padding: 0 12px;
+  box-sizing: border-box;
+}
