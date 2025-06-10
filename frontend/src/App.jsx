@@ -15,35 +15,36 @@ import Navigation from "./components/Navigation";
 import SaveIdea from "./components/SaveIdea";
 import FundDAOForm from "./components/fundDAOForm";
 
-// Initialize QueryClient for React Query
+// Set up React Query for efficient data fetching and caching
 const queryClient = new QueryClient();
 
-// Get projectId from Reown Cloud Dashboard
-// To get your project ID:
-// 1. Go to https://cloud.reown.com
-// 2. Create a new project
-// 3. Copy the project ID and replace this value
-const projectId = 'test-project-id'; // Replace with your actual project ID from Reown Cloud
+// Your Reown Cloud project ID - get this from your Reown Cloud dashboard
+// at https://cloud.reown.com after creating a project
+const projectId = 'test-project-id';
 
-// Create metadata object for Reown AppKit
+// Basic information about your DAO project that will be shown in wallets
+// and used for analytics
 const metadata = {
   name: 'DAO Project',
   description: 'DAO and Fund Distribution Project',
   url: window.location.origin,
-  icons: ['https://your-icon-url.com/icon.png'] // Replace with your icon URL
+  icons: ['https://your-icon-url.com/icon.png'] // Add your project's icon URL here
 };
 
-// Set supported networks
+// The blockchain networks your DAO will support
+// Currently set up for Ethereum mainnet and Arbitrum
 const networks = [mainnet, arbitrum];
 
-// Create Wagmi Adapter
+// Connect Wagmi (wallet connection library) to Reown AppKit
+// This enables wallet connections and transaction signing
 const wagmiAdapter = new WagmiAdapter({
   networks,
   projectId,
   ssr: true
 });
 
-// Initialize Reown AppKit
+// Set up the core Reown AppKit functionality
+// This includes wallet connections, analytics, and network management
 createAppKit({
   adapters: [wagmiAdapter],
   networks,
