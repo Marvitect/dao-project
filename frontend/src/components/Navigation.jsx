@@ -2,8 +2,11 @@ import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
 import { Link } from "react-router-dom";
 import Container from "react-bootstrap/Container";
+import { useAppKit } from '@reown/appkit/react';
 
-const Navigation = ({ account }) => {
+const Navigation = ({ account, onConnect }) => {
+  const { open } = useAppKit();
+
   return (
     <Navbar bg="light" expand="lg" className="my-3">
       <Container> {/* This limits the navbar width and centers it */}
@@ -27,7 +30,18 @@ const Navigation = ({ account }) => {
               </Link>
             </Nav.Item>
           </Nav>
-          <Navbar.Text>{account}</Navbar.Text>
+          {account ? (
+            <Navbar.Text>
+              {`${account.slice(0, 6)}...${account.slice(-4)}`}
+            </Navbar.Text>
+          ) : (
+            <button 
+              onClick={() => open()}
+              className="btn btn-primary"
+            >
+              Connect Wallet
+            </button>
+          )}
         </Navbar.Collapse>
       </Container>
     </Navbar>

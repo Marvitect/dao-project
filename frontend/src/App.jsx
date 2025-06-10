@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { BrowserProvider, Contract, getAddress, formatEther } from "ethers";
+import { createAppKit } from '@reown/appkit/react';
+import { WagmiProvider } from 'wagmi';
+import { mainnet, arbitrum } from '@reown/appkit/networks';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
+import { useAppKit, useAppKitAccount, useAppKitProvider } from '@reown/appkit/react';
 import config from "./config.json";
 import DAO_ABI from "./abis/DAO.json";
 import TOKEN_ABI from "./abis/Token.json";
@@ -9,32 +15,77 @@ import Navigation from "./components/Navigation";
 import SaveIdea from "./components/SaveIdea";
 import FundDAOForm from "./components/fundDAOForm";
 
+// Initialize QueryClient for React Query
+const queryClient = new QueryClient();
+
+// Get projectId from Reown Cloud Dashboard
+// To get your project ID:
+// 1. Go to https://cloud.reown.com
+// 2. Create a new project
+// 3. Copy the project ID and replace this value
+const projectId = 'test-project-id'; // Replace with your actual project ID from Reown Cloud
+
+// Create metadata object for Reown AppKit
+const metadata = {
+  name: 'DAO Project',
+  description: 'DAO and Fund Distribution Project',
+  url: window.location.origin,
+  icons: ['https://your-icon-url.com/icon.png'] // Replace with your icon URL
+};
+
+// Set supported networks
+const networks = [mainnet, arbitrum];
+
+// Create Wagmi Adapter
+const wagmiAdapter = new WagmiAdapter({
+  networks,
+  projectId,
+  ssr: true
+});
+
+// Initialize Reown AppKit
+createAppKit({
+  adapters: [wagmiAdapter],
+  networks,
+  projectId,
+  metadata,
+  features: {
+    analytics: true
+  }
+});
+
+// Create a context provider component
+function AppKitProvider({ children }) {
+  return (
+    <WagmiProvider config={wagmiAdapter.wagmiConfig}>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </WagmiProvider>
+  );
+}
+
 function App() {
   const [provider, setProvider] = useState(null);
-  const [account, setAccount] = useState(null);
   const [dao, setDao] = useState(null);
   const [token, setToken] = useState(null);
   const [proposals, setProposals] = useState([]);
   const [treasuryBalance, setTreasuryBalance] = useState("0");
   const [isLoading, setIsLoading] = useState(true);
 
+  // Use Reown AppKit hooks
+  const { address, isConnected } = useAppKitAccount();
+  const { walletProvider } = useAppKitProvider("eip155");
+  const { open } = useAppKit();
+
   useEffect(() => {
-    loadBlockchainData();
-  }, []);
+    if (isConnected && walletProvider) {
+      loadBlockchainData();
+    }
+  }, [isConnected, walletProvider]);
 
   const loadBlockchainData = async () => {
-    if (!window.ethereum) {
-      alert("Please install MetaMask!");
-      return;
-    }
-
     try {
-      const provider = new BrowserProvider(window.ethereum);
+      const provider = new BrowserProvider(walletProvider);
       setProvider(provider);
-
-      const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-      const checksummed = getAddress(accounts[0]);
-      setAccount(checksummed);
 
       const signer = await provider.getSigner();
 
@@ -92,42 +143,53 @@ function App() {
   };
 
   return (
-    <Router>
-      <Navigation account={account} />
-      {isLoading ? (
-        <p>Loading blockchain data...</p>
-      ) : (
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <>
-                <h3>DAO Treasury Balance: {treasuryBalance} Tokens</h3>
-                <Proposals
-                  proposals={proposals}
-                  contract={dao}
-                  provider={provider}
-                  setIsLoading={setIsLoading}
-                  onProposalsUpdated={refreshProposals}
-                />
-              </>
-            }
-          />
-          <Route
-            path="/save-idea"
-            element={
-              <>
-                <SaveIdea />
-                <div style={{ marginTop: "1rem", fontWeight: "bold" }}>
-                  DAO Treasury Balance: {treasuryBalance} Tokens
-                </div>
-              </>
-            }
-          />
-          <Route path="/fund-dao" element={<FundDAOForm provider={provider} dao={dao} token={token} />} />
-        </Routes>
-      )}
-    </Router>
+    <AppKitProvider>
+      <Router>
+        <Navigation account={address} onConnect={() => open()} />
+        {!isConnected ? (
+          <div className="flex justify-center items-center h-screen">
+            <button 
+              onClick={() => open()}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            >
+              Connect Wallet
+            </button>
+          </div>
+        ) : isLoading ? (
+          <p>Loading blockchain data...</p>
+        ) : (
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <>
+                  <h3>DAO Treasury Balance: {treasuryBalance} Tokens</h3>
+                  <Proposals
+                    proposals={proposals}
+                    contract={dao}
+                    provider={provider}
+                    setIsLoading={setIsLoading}
+                    onProposalsUpdated={refreshProposals}
+                  />
+                </>
+              }
+            />
+            <Route
+              path="/save-idea"
+              element={
+                <>
+                  <SaveIdea />
+                  <div style={{ marginTop: "1rem", fontWeight: "bold" }}>
+                    DAO Treasury Balance: {treasuryBalance} Tokens
+                  </div>
+                </>
+              }
+            />
+            <Route path="/fund-dao" element={<FundDAOForm provider={provider} dao={dao} token={token} />} />
+          </Routes>
+        )}
+      </Router>
+    </AppKitProvider>
   );
 }
 
